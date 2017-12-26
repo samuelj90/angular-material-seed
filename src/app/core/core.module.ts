@@ -1,6 +1,7 @@
 import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {CdkTableModule} from '@angular/cdk/table';
+import { HttpClientModule } from '@angular/common/http';
 import {
   MatAutocompleteModule,
   MatButtonModule,
@@ -36,6 +37,8 @@ import {
 } from '@angular/material';
 import { LoginComponent } from './components/login/login.component';
 import { CoreRoutingModule } from './core-routing.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   imports: [
@@ -72,6 +75,9 @@ import { CoreRoutingModule } from './core-routing.module';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
     CoreRoutingModule
   ],
   exports: [
@@ -109,10 +115,11 @@ import { CoreRoutingModule } from './core-routing.module';
     MatTooltipModule,
     LoginComponent
   ],
+  providers: [AuthService],
   declarations: [LoginComponent]
 })
-export class CoreModule { 
-  
+export class CoreModule {
+
   constructor (@Optional() @SkipSelf() parentModule: CoreModule) {
     if (parentModule) {
       throw new Error(

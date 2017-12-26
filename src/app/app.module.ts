@@ -10,6 +10,7 @@ import { environment } from '../environments/environment';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
+import { BackendModule } from './backend/backend.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { CoreModule } from './core/core.module';
     AppRoutingModule,
     BrowserAnimationsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
-    CoreModule.forRoot()
+    CoreModule.forRoot(),
+    BackendModule
   ],
   providers: [],
   bootstrap: [AppComponent]
