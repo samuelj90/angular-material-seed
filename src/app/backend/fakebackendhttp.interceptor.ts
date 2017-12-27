@@ -17,7 +17,7 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
         const users: any[] = JSON.parse(localStorage.getItem('users')) ||
         [{
             id: 'fake-userid',
-            username: 'test',
+            userName: 'test',
             firstName: 'TEST',
             lastName: 'USER',
             password: 'test'
@@ -28,17 +28,21 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
             if (request.url.endsWith('/api/authenticate') && request.method === 'POST') {
 
                 const filteredUsers = users.filter(user => {
-                    return user.username === request.body.username && user.password === request.body.password;
+                    return user.userName === request.body.userName && user.password === request.body.password;
                 });
 
                 if (filteredUsers.length) {
                     const user = filteredUsers[0];
                     const body = {
-                        id: user.id,
-                        username: user.username,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        token: 'fake-jwt-token'
+                        idToken: 'fake-id-token',
+                        accessToken: 'fake-jwt-token',
+                        expiresIn: 50,
+                        profile: {
+                            id: user.id,
+                            userName: user.userName,
+                            firstName: user.firstName,
+                            lastName: user.lastName
+                        }
                     };
 
                     return Observable.of(new HttpResponse({ status: 200, body: body }));

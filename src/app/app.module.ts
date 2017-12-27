@@ -22,7 +22,13 @@ import { BackendModule } from './backend/backend.module';
     BrowserAnimationsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production }),
     CoreModule.forRoot(),
-    BackendModule
+    (() => {
+      if (! environment.mockEnabled) {
+        return [];
+      } else {
+        return BackendModule;
+      }
+    })()
   ],
   providers: [],
   bootstrap: [AppComponent]

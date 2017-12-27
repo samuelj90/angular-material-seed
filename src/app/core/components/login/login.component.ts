@@ -5,6 +5,7 @@ import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ export class LoginComponent implements OnInit {
   private loginForm: FormGroup;
   private returnUrl: string;
 
-  constructor(private route: ActivatedRoute,
+  constructor(public snackBar: MatSnackBar,
+    private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private authService: AuthService) {
@@ -28,7 +30,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    if (this.authService.isloggedIn) {
+    if (this.authService.isloggedIn()) {
       this.router.navigateByUrl(this.returnUrl);
     }
   }
@@ -43,8 +45,10 @@ export class LoginComponent implements OnInit {
             this.router.navigateByUrl(this.returnUrl);
           }
         },
-        error => {
-          throw new Error('Some error occured');
+        (error) => {
+          this.snackBar.open(error, 'OK', {
+            duration: 3000
+          });
         }
       );
     }

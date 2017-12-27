@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { error } from 'util';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
   private loggedInBehaviourSubject: BehaviorSubject<boolean>;
 
   constructor(private http: HttpClient) {
+    this.loggedIn = JSON.parse(localStorage.getItem('logged_in')) ? true : false;
     this.loggedInBehaviourSubject = new BehaviorSubject<boolean>(this.loggedIn);
   }
 
@@ -17,38 +19,54 @@ export class AuthService {
     const url = '/api/authenticate';
     this.http.post(url, { userName: userName, password: password })
       .toPromise()
-      .then(this.handleLogin)
-      .catch(this.handleError);
+      .then((value) => { this.handleLogin(value); }, (reason) => { this.handleError(reason); });
     return this.isLoggedInObserver();
   }
 
   private handleLogin(authResponse: any): any {
-    this.createSession();
+    return this.createSession(authResponse);
   }
 
-  handleError(error: any): any {
-    this.loggedInBehaviourSubject.next(error);
+  private handleError(reason: any): any {
+    this.loggedInBehaviourSubject.error(reason);
   }
 
-  private createSession(): void {
-    throw new Error('Method not implemented.');
+  private createSession(authResponse: any): void {
+    const expTime = authResponse.expiresIn * 1000 + Date.now();
+    localStorage.setItem('token', authResponse.accessToken);
+    localStorage.setItem('id_token', authResponse.idToken);
+    localStorage.setItem('profile', JSON.stringify(authResponse.profile));
+    localStorage.setItem('expires_at', JSON.stringify(expTime));
+    localStorage.setItem('logged_in', JSON.stringify(this.loggedIn));
+    this.loggedInBehaviourSubject.next(true);
   }
 
   private destroySession(): void {
-    throw new Error('Method not implemented.');
+    localStorage.removeItem('token');
+    localStorage.removeItem('id_token');
+    localStorage.removeItem('profile');
+    localStorage.removeItem('expires_at');
+    localStorage.removeItem('logged_in');
+    this.loggedInBehaviourSubject.next(false);
   }
 
   isloggedIn() {
-    return this.isloggedIn;
+    console.log(this.loggedIn);
+    return this.loggedIn;
   }
 
   isLoggedInObserver(): Observable<boolean> {
     return this.loggedInBehaviourSubject.asObservable();
   }
 
-  logout() {
+  logout(): Observable<boolean> {
     this.destroySession();
-    throw new Error('Method not implemented.');
+    return this.isLoggedInObserver();
+  }
+
+  // TODO : Refactor if possible.
+  getProfile() {
+    return JSON.parse(localStorage.getItem('profile'));
   }
 
 }

@@ -39,6 +39,7 @@ import { LoginComponent } from './components/login/login.component';
 import { CoreRoutingModule } from './core-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from './services/auth.service';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @NgModule({
   imports: [
@@ -115,8 +116,8 @@ import { AuthService } from './services/auth.service';
     MatTooltipModule,
     LoginComponent
   ],
-  providers: [AuthService],
-  declarations: [LoginComponent]
+  providers: [],
+  declarations: [LoginComponent, DashboardComponent]
 })
 export class CoreModule {
 
@@ -130,7 +131,7 @@ export class CoreModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: CoreModule,
-      providers: []
+      providers: [AuthService]
     };
   }
 }
